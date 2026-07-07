@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dummy Shop — Home</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/config.js"></script>
+    <script src="js/analytics.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="index.html">Dummy Shop</a>
+      <nav>
+        <a href="index.html">Shop</a>
+        <a class="cart-link" href="cart.html">
+          Cart
+          <span id="cart-count" hidden>0</span>
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Test your integrations</h1>
+        <p>Add items to cart, complete checkout, and fire Order Completed to Segment + Impact.com.</p>
+      </section>
+
+      <section class="product-grid" id="product-grid"></section>
+    </main>
+
+    <footer>Dummy ecommerce site for Segment &amp; Impact.com testing</footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+      function renderProducts() {
+        const grid = document.getElementById("product-grid");
+        grid.innerHTML = window.PRODUCTS.map(
+          (product) => `
+            <article class="product-card">
+              <img src="${product.image}" alt="${product.name}" />
+              <div class="content">
+                <h2>${product.name}</h2>
+                <div class="meta">${product.category}</div>
+                <div class="price">${formatMoney(product.price)}</div>
+                <button type="button" data-add="${product.id}">Add to cart</button>
+              </div>
+            </article>
+          `
+        ).join("");
+      }
+
+      document.getElementById("product-grid").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-add]");
+        if (!button) return;
+        addToCart(button.dataset.add, 1);
+      });
+
+      renderProducts();
+      updateCartBadge();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dummy Shop — Order Confirmed</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/config.js"></script>
+    <script src="js/analytics.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="index.html">Dummy Shop</a>
+      <nav>
+        <a href="index.html">Shop</a>
+        <a class="cart-link" href="cart.html">
+          Cart
+          <span id="cart-count" hidden>0</span>
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="success-icon">✓</div>
+        <h1>Order confirmed</h1>
+        <p id="confirmation-message">Thanks for your order.</p>
+
+        <div id="order-summary"></div>
+
+        <div class="note">
+          This page fires <strong>Order Completed</strong> to Segment and a conversion to Impact.com.
+          Open your browser console or Segment/Impact dashboards to verify.
+        </div>
+
+        <div class="actions-row">
+          <a class="btn" href="index.html">Back to shop</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>Dummy ecommerce site for Segment &amp; Impact.com testing</footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+      updateCartBadge();
+
+      let order;
+      try {
+        order = JSON.parse(sessionStorage.getItem("last-order") || "null");
+      } catch {
+        order = null;
+      }
+
+      if (!order) {
+        window.location.href = "index.html";
+      } else {
+        document.getElementById(
+          "confirmation-message"
+        ).textContent = `Order ${order.orderId} is confirmed. A confirmation was sent to ${order.email}.`;
+
+        document.getElementById("order-summary").innerHTML = `
+          <div class="summary-row"><span>Order ID</span><strong>${order.orderId}</strong></div>
+          <div class="summary-row"><span>Total</span><strong>${formatMoney(order.total)}</strong></div>
+          <div class="summary-row"><span>Items</span><strong>${order.items.length}</strong></div>
+        `;
+
+        trackOrderCompleted(order);
+        sessionStorage.removeItem("last-order");
+      }
+    </script>
+  </body>
+</html>

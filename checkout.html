@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dummy Shop — Checkout</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/config.js"></script>
+    <script src="js/analytics.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="index.html">Dummy Shop</a>
+      <nav>
+        <a href="index.html">Shop</a>
+        <a class="cart-link" href="cart.html">
+          Cart
+          <span id="cart-count" hidden>0</span>
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h1>Checkout</h1>
+        <p>Enter test details to complete a dummy order.</p>
+
+        <form id="checkout-form">
+          <label>
+            Email
+            <input type="email" name="email" required placeholder="you@example.com" />
+          </label>
+          <label>
+            Full name
+            <input type="text" name="name" required placeholder="Jane Doe" />
+          </label>
+          <div class="summary-row">
+            <span>Order total</span>
+            <strong id="checkout-total">$0.00</strong>
+          </div>
+          <button type="submit">Place order</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>Dummy ecommerce site for Segment &amp; Impact.com testing</footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+      const cart = getCart();
+      if (cart.length === 0) {
+        window.location.href = "cart.html";
+      }
+
+      document.getElementById("checkout-total").textContent = formatMoney(getCartTotal());
+      updateCartBadge();
+
+      document.getElementById("checkout-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const order = {
+          orderId: createOrderId(),
+          email: formData.get("email"),
+          name: formData.get("name"),
+          customerId: `cust-${Date.now()}`,
+          total: getCartTotal(),
+          items: getCart(),
+        };
+
+        sessionStorage.setItem("last-order", JSON.stringify(order));
+        clearCart();
+        window.location.href = "confirmation.html";
+      });
+    </script>
+  </body>
+</html>

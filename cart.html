@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dummy Shop — Cart</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/config.js"></script>
+    <script src="js/analytics.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="index.html">Dummy Shop</a>
+      <nav>
+        <a href="index.html">Shop</a>
+        <a class="cart-link" href="cart.html">
+          Cart
+          <span id="cart-count" hidden>0</span>
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h1>Your cart</h1>
+        <div id="cart-items"></div>
+        <div class="summary-row">
+          <strong>Total</strong>
+          <strong id="cart-total">$0.00</strong>
+        </div>
+        <div class="actions-row">
+          <a class="btn secondary" href="index.html">Continue shopping</a>
+          <a class="btn" href="checkout.html" id="checkout-link">Checkout</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>Dummy ecommerce site for Segment &amp; Impact.com testing</footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+      function renderCart() {
+        const cart = getCart();
+        const container = document.getElementById("cart-items");
+        const checkoutLink = document.getElementById("checkout-link");
+
+        if (cart.length === 0) {
+          container.innerHTML = '<p class="empty-state">Your cart is empty.</p>';
+          checkoutLink.style.pointerEvents = "none";
+          checkoutLink.style.opacity = "0.5";
+        } else {
+          container.innerHTML = cart
+            .map(
+              (item) => `
+                <div class="cart-item">
+                  <div class="details">
+                    <strong>${item.name}</strong>
+                    <div class="meta">${item.category} · Qty ${item.quantity}</div>
+                  </div>
+                  <div class="actions">
+                    <div>${formatMoney(item.price * item.quantity)}</div>
+                    <button type="button" class="secondary" data-remove="${item.productId}">Remove</button>
+                  </div>
+                </div>
+              `
+            )
+            .join("");
+          checkoutLink.style.pointerEvents = "";
+          checkoutLink.style.opacity = "";
+        }
+
+        document.getElementById("cart-total").textContent = formatMoney(getCartTotal());
+        updateCartBadge();
+      }
+
+      document.getElementById("cart-items").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-remove]");
+        if (!button) return;
+        removeFromCart(button.dataset.remove);
+        renderCart();
+      });
+
+      renderCart();
+    </script>
+  </body>
+</html>
