@@ -52,42 +52,6 @@ function loadSegment() {
   }
 }
 
-function loadImpact() {
-  const campaignId = window.APP_CONFIG?.impact?.campaignId;
-  if (!campaignId || campaignId === "YOUR_IMPACT_CAMPAIGN_ID") {
-    console.warn("[Impact] Replace YOUR_IMPACT_CAMPAIGN_ID in js/config.js");
-    window.ire = function (...args) {
-      console.log("[Impact stub] ire", ...args);
-    };
-    return;
-  }
-
-  (function (a, b, c, d, e, f, g) {
-    e.ire_o = c;
-    e[c] =
-      e[c] ||
-      function () {
-        (e[c].a = e[c].a || []).push(arguments);
-      };
-    f = d.createElement(b);
-    g = d.getElementsByTagName(b)[0];
-    f.async = 1;
-    f.src = a;
-    g.parentNode.insertBefore(f, g);
-  })(
-    "https://static.impact.com/static/js/impact.min.js",
-    "script",
-    "ire",
-    document,
-    window
-  );
-
-  window.ire("identify", {
-    customerId: "",
-    customerEmail: "",
-  });
-}
-
 function trackOrderCompleted(order) {
   const products = order.items.map((item) => ({
     product_id: item.productId,
@@ -107,44 +71,8 @@ function trackOrderCompleted(order) {
       products,
     });
   }
-
-  const campaignId = window.APP_CONFIG?.impact?.campaignId;
-  if (window.ire && campaignId && campaignId !== "YOUR_IMPACT_CAMPAIGN_ID") {
-    window.ire("trackConversion", campaignId, {
-      orderId: order.orderId,
-      customerId: order.customerId,
-      customerEmail: order.email,
-      customerStatus: "NEW",
-      currencyCode: "USD",
-      orderPromoCode: "",
-      orderDiscount: 0,
-      items: order.items.map((item) => ({
-        subTotal: item.price * item.quantity,
-        category: item.category,
-        sku: item.productId,
-        quantity: item.quantity,
-        name: item.name,
-      })),
-    });
-  } else if (window.ire) {
-    window.ire("trackConversion", "YOUR_IMPACT_CAMPAIGN_ID", {
-      orderId: order.orderId,
-      customerId: order.customerId,
-      customerEmail: order.email,
-      customerStatus: "NEW",
-      currencyCode: "USD",
-      items: order.items.map((item) => ({
-        subTotal: item.price * item.quantity,
-        category: item.category,
-        sku: item.productId,
-        quantity: item.quantity,
-        name: item.name,
-      })),
-    });
-  }
 }
 
 loadSegment();
-loadImpact();
 
 window.trackOrderCompleted = trackOrderCompleted;
